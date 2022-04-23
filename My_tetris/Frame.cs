@@ -10,6 +10,7 @@ namespace My_tetris
     {
         List<Figure> wallList;
         public int w;
+        public List<Point> lineDownPoints;
 
         public Frame(int width, int height)
         {
@@ -19,6 +20,7 @@ namespace My_tetris
             HorizLine lineDown = new (0, width, height, '-');
             VertLine lineLeft = new (0, 0, height, '|');
             VertLine lineRight = new (width, 0, height, '|');
+            lineDownPoints = lineDown.ls;
             wallList.Add(lineDown);
             wallList.Add(lineUp);
             wallList.Add(lineLeft);

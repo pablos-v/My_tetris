@@ -11,7 +11,7 @@ namespace My_tetris
         public Direction direction;
         public Block(int form, int width)
         {
-            ls = new List<Point>();
+            ls = new();
             if (form == 1) // Куб
             {
                 for (int i = 0; i < 2; i++)
@@ -23,6 +23,76 @@ namespace My_tetris
                     }
                 }
             }
+            if (form == 2) // палка
+            {
+                for (int j = 0; j < 5; j++)
+                {
+                    Point p = new (width / 2 - 2 + j, 1, '*');
+                    ls.Add(p);
+                }
+            }
+            if (form == 3) // L
+            {
+                for (int j = 1; j < 5; j++)
+                {
+                    Point p = new(width / 2, j, '*');
+                    ls.Add(p);
+                }
+                Point p1 = new(width / 2 + 1, 4, '*');
+                ls.Add(p1);
+            }
+            if (form == 4) // зеркальная L
+            {
+                for (int j = 1; j < 5; j++)
+                {
+                    Point p = new(width / 2, j, '*');
+                    ls.Add(p);
+                }
+                Point p1 = new(width / 2 - 1, 4, '*');
+                ls.Add(p1);
+            }
+            if (form == 5) // зю
+            {
+                int x = 0;
+                for (int i = 1; i < 3; i++)
+                {
+                    for (int j = 0; j < 2; j++)
+                    {
+                        Point p = new(width / 2 + j + x, i, '*');
+                        ls.Add(p);
+                    }
+                    x++;
+                }
+            }
+            if (form == 6) // зеркальная зю
+            {
+                int x = 0;
+                for (int i = 1; i < 3; i++)
+                {
+                    for (int j = 0; j < 2; j++)
+                    {
+                        Point p = new(width / 2 + j - x, i, '*');
+                        ls.Add(p);
+                    }
+                    x++;
+                }
+            }
+        }
+
+        internal bool IsHit(List<Point> playGround, List<Point> lineDownPoints)
+        {
+            foreach (Point p in ls)
+            {
+                foreach (Point groundPoint in playGround)
+                {
+                    if (p.x==groundPoint.x && p.y+1 == groundPoint.y) return true;
+                }
+                foreach (Point groundPoint in lineDownPoints)
+                {
+                    if (p.x == groundPoint.x && p.y == groundPoint.y) return true;
+                }
+            }
+            return false;
         }
 
         internal void Move()
@@ -42,14 +112,6 @@ namespace My_tetris
 
         }
 
-        //public Point GetNextPoint()
-        //{
-        //    Point head = pL.Last();
-        //    Point nextP = new Point(head);
-        //    nextP.Move(1, direction);
-        //    return nextP;
-        //}
-
         //public void DirectionListener(ConsoleKey key)
         //{
         //    if (key == ConsoleKey.LeftArrow) direction = Direction.LEFT;
@@ -58,14 +120,5 @@ namespace My_tetris
         //    else if (key == ConsoleKey.DownArrow) direction = Direction.DOWN;
         //}
 
-        //internal bool IsHit()
-        //{
-        //    var head = pL.Last();
-        //    for (int i = 0; i < pL.Count - 2; i++)
-        //    {
-        //        if (head.IsHit(pL[i])) return true;
-        //    }
-        //    return false;
-        //}
     }
 }

@@ -8,7 +8,7 @@ namespace My_tetris
 {
     internal class Figure
     {
-        protected List<Point> ls;
+        public List<Point> ls;
         public void Draw()
         {
             foreach (Point i in ls)

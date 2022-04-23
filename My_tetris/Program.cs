@@ -3,14 +3,28 @@
 My_tetris.Frame frame = new (20, 28);
 frame.Draw();
 
-My_tetris.Block block = new (1, frame.w);
+Random rnd = new();
+int dice = rnd.Next(1, 5);
+
+My_tetris.Block block = new (dice, frame.w);
 block.Draw();
 
-for (int i = 0; i < 15; i++)
+List<My_tetris.Point> playGround = new();
+
+while (true)
 {
+    if (block.IsHit(playGround, frame.lineDownPoints))
+    {
+        playGround.AddRange(block.ls);
+        dice = rnd.Next(1, 5);
+        My_tetris.Block block1 = new(dice, frame.w);
+        block = block1;
+        block.Draw();
+    }
     block.Move();
-    Thread.Sleep(250);
+    Thread.Sleep(100);
 }
+
 
 //while (true)
 //{
