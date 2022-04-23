@@ -5,7 +5,7 @@ frame.Draw();
 
 My_tetris.Block block = new (1, frame.w);
 block.Draw();
-block.Move();
+
 for (int i = 0; i < 15; i++)
 {
     block.Move();

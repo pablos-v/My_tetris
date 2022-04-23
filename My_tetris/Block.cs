@@ -27,34 +27,18 @@ namespace My_tetris
 
         internal void Move()
         {
-            List<int> yList = new List<int>();
-            foreach (Point p in ls) // список всех у-координат блока
+            for (int i = 0; i < ls.Count; i++) // стереть блок
             {
-                yList.Add(p.y);
+                ls[i].symb = ' ';
+                ls[i].Draw();
             }
-            yList.Sort();
-            int topRow = yList[0]; // самый высокий ряд блока
 
-            foreach (Point p in ls) // удалить ряд topRow
-            {
-                if (p.y == topRow)
-                {
-                    p.Clear();
-                }
-            }
-            for (int i = 0; i < ls.Count; i++) // переместить блок ниже
+            for (int i = 0; i < ls.Count; i++) // отрисовать блок ниже
             {
                 ls[i].y++;
                 ls[i].symb = '*';
                 ls[i].Draw();
             }
-
-
-            //Point tail = pL.First();
-            //pL.Remove(tail);
-            //pL.Add(head);
-            //tail.Clear();
-            //head.Draw();
 
         }
 
