@@ -8,7 +8,7 @@ namespace My_tetris
 {
     internal class Block : Figure
     {
-        public Direction direction;
+        //public Direction direction;
         public Block(int form, int width)
         {
             ls = new();
@@ -79,7 +79,16 @@ namespace My_tetris
             }
         }
 
-        internal bool IsHit(List<Point> playGround, List<Point> lineDownPoints)
+        internal bool BreakingUpLine(List<Point> UpLinePoints)
+        {
+            foreach (Point p in ls)
+            {
+                if (p.y <= 0) return true;
+            }
+            return false;
+        }
+
+        internal bool Fallen(List<Point> playGround, List<Point> lineDownPoints)
         {
             foreach (Point p in ls)
             {
@@ -89,36 +98,88 @@ namespace My_tetris
                 }
                 foreach (Point groundPoint in lineDownPoints)
                 {
-                    if (p.x == groundPoint.x && p.y == groundPoint.y) return true;
+                    if (p.y == groundPoint.y) return true;
                 }
             }
             return false;
         }
 
-        internal void Move()
+        internal void Move(string direction, int w)
         {
-            for (int i = 0; i < ls.Count; i++) // стереть блок
+
+            void Delete()
             {
-                ls[i].symb = ' ';
-                ls[i].Draw();
+                for (int i = 0; i < ls.Count; i++) // стереть блок
+                {
+                    ls[i].symb = ' ';
+                    ls[i].Draw();
+                }
             }
 
-            for (int i = 0; i < ls.Count; i++) // отрисовать блок ниже
+             if (direction == "down")
             {
-                ls[i].y++;
-                ls[i].symb = '*';
-                ls[i].Draw();
+                Delete();
+                for (int i = 0; i < ls.Count; i++) // отрисовать блок ниже
+                {
+                    ls[i].y++;
+                    ls[i].symb = '*';
+                    ls[i].Draw();
+                }
             }
 
+            if (direction == "left")
+            {
+                foreach (Point p in ls) // проверить на границу
+                {
+                    if (p.x == w - 1 || p.x == 1) return;
+                }
+                Delete();
+                for (int i = 0; i < ls.Count; i++) // отрисовать блок левее
+                {
+                    ls[i].x--;
+                    ls[i].symb = '*';
+                    ls[i].Draw();
+                }
+            }
+
+            if (direction == "right")
+            {
+                foreach (Point p in ls) // проверить на границу
+                {
+                    if (p.x == w - 1 || p.x == 1) return;
+                }
+                Delete();
+                for (int i = 0; i < ls.Count; i++) // отрисовать блок правее
+                {
+                    ls[i].x++;
+                    ls[i].symb = '*';
+                    ls[i].Draw();
+                }
+            }
         }
-
-        //public void DirectionListener(ConsoleKey key)
-        //{
-        //    if (key == ConsoleKey.LeftArrow) direction = Direction.LEFT;
-        //    else if (key == ConsoleKey.RightArrow) direction = Direction.RIGHT;
-        //    else if (key == ConsoleKey.UpArrow) direction = Direction.UP;
-        //    else if (key == ConsoleKey.DownArrow) direction = Direction.DOWN;
-        //}
+        // решил прокинуть границу правой стороны рамки для проверки границы в методе Move(),
+        // получилось корявоо, это костыль. Но я пока не знаю как лучше.
+        // с кодом проверки тоже косяк - он написан дважды, тоже не знаю как улучшить.
+        public void DirectionListener(ConsoleKey key, int w) 
+        {
+            string direction;
+            if (key == ConsoleKey.LeftArrow)
+            {
+                Move(direction = "left", w);
+            }
+            else if (key == ConsoleKey.RightArrow)
+            {
+                Move(direction = "right", w);
+            }
+            else if (key == ConsoleKey.UpArrow)
+            {
+                // повернуть по часовой
+            }
+            else if (key == ConsoleKey.DownArrow)
+            {
+                // повернуть против часовой
+            }
+        }
 
     }
 }

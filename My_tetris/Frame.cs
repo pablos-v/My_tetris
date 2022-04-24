@@ -11,7 +11,7 @@ namespace My_tetris
         List<Figure> wallList;
         public int w;
         public List<Point> lineDownPoints;
-
+        public List<Point> upLinePoints;
         public Frame(int width, int height)
         {
             wallList = new List<Figure>();
@@ -21,6 +21,7 @@ namespace My_tetris
             VertLine lineLeft = new (0, 0, height, '|');
             VertLine lineRight = new (width, 0, height, '|');
             lineDownPoints = lineDown.ls;
+            upLinePoints = lineUp.ls;
             wallList.Add(lineDown);
             wallList.Add(lineUp);
             wallList.Add(lineLeft);
