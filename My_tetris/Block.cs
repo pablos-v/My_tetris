@@ -83,7 +83,11 @@ namespace My_tetris
         {
             foreach (Point p in ls)
             {
-                if (p.y <= 0) return true;
+                foreach (Point l in UpLinePoints)
+                {
+
+                  if (p.y == l.y+2) return true;
+                }
             }
             return false;
         }

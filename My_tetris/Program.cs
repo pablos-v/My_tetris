@@ -27,14 +27,15 @@ while (true)
         block.Draw();
     }
 
-    block.Move(direction = "down", frame.w);
-    Thread.Sleep(100);
-
     if (Console.KeyAvailable)
     {
         ConsoleKeyInfo key = Console.ReadKey();
-        block.DirectionListener(key.Key, frame.w); //в классе блок метод Rotate() или Strafe() смотря от кнопки
+        block.DirectionListener(key.Key, frame.w);
     }
+
+    block.Move(direction = "down", frame.w);
+    Thread.Sleep(50);
+
 }
 
 Console.SetCursorPosition(30, 12);
