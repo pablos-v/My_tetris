@@ -1,16 +1,16 @@
-﻿Console.SetBufferSize(120, 30);
+﻿//Console.SetBufferSize(120, 30);
 
 My_tetris.Frame frame = new (20, 28);
 frame.Draw();
 
 Random rnd = new();
-int dice = rnd.Next(1, 5);
+int dice = rnd.Next(1, 7);
 
 My_tetris.Block block = new (dice, frame.w);
 block.Draw();
 
 List<My_tetris.Point> playGround = new();
-string direction;
+//string direction;
 
 while (true)
 {
@@ -21,7 +21,7 @@ while (true)
     {
         if (block.BreakingUpLine(frame.upLinePoints)) break; // Геймовер
         playGround.AddRange(block.ls);
-        dice = rnd.Next(1, 5);
+        dice = rnd.Next(1, 7);
         My_tetris.Block block1 = new(dice, frame.w);
         block = block1;
         block.Draw();
@@ -30,11 +30,11 @@ while (true)
     if (Console.KeyAvailable)
     {
         ConsoleKeyInfo key = Console.ReadKey();
-        block.DirectionListener(key.Key, frame.w);
+        block.DirectionListener(key.Key, frame.w, block.f);
     }
 
-    block.Move(direction = "down", frame.w);
-    Thread.Sleep(50);
+    block.Move("down", frame.w);
+    Thread.Sleep(250);
 
 }
 

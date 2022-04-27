@@ -8,20 +8,15 @@ namespace My_tetris
 {
     internal class Block : Figure
     {
+        public int f;
         //public Direction direction;
         public Block(int form, int width)
         {
+            f = form;
             ls = new();
             if (form == 1) // Куб
             {
-                for (int i = 0; i < 2; i++)
-                {
-                    for (int j = 1; j < 3; j++)
-                    {
-                        Point p = new (width / 2 + i, j, '*');
-                        ls.Add(p);
-                    }
-                }
+                CubeMaker(width);
             }
             if (form == 2) // палка
             {
@@ -53,28 +48,24 @@ namespace My_tetris
             }
             if (form == 5) // зю
             {
-                int x = 0;
-                for (int i = 1; i < 3; i++)
-                {
-                    for (int j = 0; j < 2; j++)
-                    {
-                        Point p = new(width / 2 + j + x, i, '*');
-                        ls.Add(p);
-                    }
-                    x++;
-                }
+                CubeMaker(width);
+                ls[1].x += 2;
             }
             if (form == 6) // зеркальная зю
             {
-                int x = 0;
-                for (int i = 1; i < 3; i++)
+                CubeMaker(width);
+                ls[3].x -= 2;
+            }
+        }
+
+        private void CubeMaker(int width)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 1; j < 3; j++)
                 {
-                    for (int j = 0; j < 2; j++)
-                    {
-                        Point p = new(width / 2 + j - x, i, '*');
-                        ls.Add(p);
-                    }
-                    x++;
+                    Point p = new(width / 2 + i, j, '*');
+                    ls.Add(p);
                 }
             }
         }
@@ -164,26 +155,59 @@ namespace My_tetris
         // решил прокинуть границу правой стороны рамки для проверки границы в методе Move(),
         // получилось корявоо, это костыль. Но я пока не знаю как лучше.
         // с кодом проверки тоже косяк - он написан дважды, тоже не знаю как улучшить.
-        public void DirectionListener(ConsoleKey key, int w) 
+        public void DirectionListener(ConsoleKey key, int w, int form) 
         {
-            string direction;
             if (key == ConsoleKey.LeftArrow)
             {
-                Move(direction = "left", w);
+                Move("left", w);
             }
             else if (key == ConsoleKey.RightArrow)
             {
-                Move(direction = "right", w);
+                Move("right", w);
             }
             else if (key == ConsoleKey.UpArrow)
             {
-                // повернуть по часовой
+                Rotate("clockwize", form);
             }
             else if (key == ConsoleKey.DownArrow)
             {
-                // повернуть против часовой
+                Rotate("backward", form);
             }
         }
 
+        private void Rotate(string side, int form)
+        {
+            void Delete()
+            {
+                for (int i = 0; i < ls.Count; i++) // стереть блок
+                {
+                    ls[i].symb = ' ';
+                    ls[i].Draw();
+                }
+            }
+            if (form == 1) return; // куб не крутится
+
+            int degrees = side == "clockwize" ? 90 : 270;
+            double angle = Math.PI * degrees / 180.0;
+
+            Point zero; // опорная точка
+
+            if (form == 2) zero = ls[2]; // для палки - центр
+
+            else if (form == 3 || form == 4) zero = ls[1];
+
+            else zero = ls[0];
+
+            Delete();
+            for (int i = 0; i < ls.Count; i++)
+            {
+                int offsetX = ls[i].x - zero.x;
+                int offsetY = ls[i].y - zero.y;
+                ls[i].x = (int)(offsetX * Math.Cos(angle) - offsetY * Math.Sin(angle)) + zero.x;
+                ls[i].y = (int)(offsetX * Math.Sin(angle) + offsetY * Math.Cos(angle)) + zero.y;
+                ls[i].symb = '*';
+                ls[i].Draw();
+            }
+        }
     }
 }
