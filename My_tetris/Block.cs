@@ -57,6 +57,12 @@ namespace My_tetris
                 CubeMaker(width);
                 ls[3].x -= 2;
             }
+            if (form == 7) // T
+            {
+                CubeMaker(width);
+                ls[1].x += 2;
+                ls[1].y -= 1;
+            }
         }
 
         private void CubeMaker(int width)
@@ -102,16 +108,6 @@ namespace My_tetris
 
         internal void Move(string direction, int w)
         {
-
-            void Delete()
-            {
-                for (int i = 0; i < ls.Count; i++) // стереть блок
-                {
-                    ls[i].symb = ' ';
-                    ls[i].Draw();
-                }
-            }
-
              if (direction == "down")
             {
                 Delete();
@@ -178,20 +174,14 @@ namespace My_tetris
 
         private void Rotate(string side, int form)
         {
-            void Delete()
-            {
-                for (int i = 0; i < ls.Count; i++) // стереть блок
-                {
-                    ls[i].symb = ' ';
-                    ls[i].Draw();
-                }
-            }
-            if (form == 1) return; // куб не крутится
+            // куб не крутится
+            if (form == 1) return;
 
             int degrees = side == "clockwize" ? 90 : 270;
             double angle = Math.PI * degrees / 180.0;
 
-            Point zero; // опорная точка
+            // опорная точка
+            Point zero;
 
             if (form == 5 || form == 6) zero = ls[1];
 

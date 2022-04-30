@@ -16,5 +16,13 @@ namespace My_tetris
                 i.Draw();
             }
         }
+        public void Delete()
+        {
+            for (int i = 0; i < ls.Count; i++)
+            {
+                ls[i].symb = ' ';
+                ls[i].Draw();
+            }
+        }
     }
 }
