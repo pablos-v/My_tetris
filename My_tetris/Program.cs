@@ -21,7 +21,7 @@ while (true)
     {
         if (block.BreakingUpLine(frame.upLinePoints)) break; // Геймовер
         playGround.AddRange(block.ls);
-        dice = rnd.Next(1, 7);
+        dice = rnd.Next(3, 7);
         My_tetris.Block block1 = new(dice, frame.w);
         block = block1;
         block.Draw();

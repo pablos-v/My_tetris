@@ -14,6 +14,7 @@ namespace My_tetris
         {
             f = form;
             ls = new();
+            int centre = width / 2;
             if (form == 1) // Куб
             {
                 CubeMaker(width);
@@ -22,7 +23,7 @@ namespace My_tetris
             {
                 for (int j = 0; j < 5; j++)
                 {
-                    Point p = new (width / 2 - 2 + j, 1, '*');
+                    Point p = new (centre - 2 + j, 1, '*');
                     ls.Add(p);
                 }
             }
@@ -30,26 +31,26 @@ namespace My_tetris
             {
                 for (int j = 1; j < 5; j++)
                 {
-                    Point p = new(width / 2, j, '*');
+                    Point p = new(centre, j, '*');
                     ls.Add(p);
                 }
-                Point p1 = new(width / 2 + 1, 4, '*');
+                Point p1 = new(centre + 1, 4, '*');
                 ls.Add(p1);
             }
             if (form == 4) // зеркальная L
             {
                 for (int j = 1; j < 5; j++)
                 {
-                    Point p = new(width / 2, j, '*');
+                    Point p = new(centre, j, '*');
                     ls.Add(p);
                 }
-                Point p1 = new(width / 2 - 1, 4, '*');
+                Point p1 = new(centre - 1, 4, '*');
                 ls.Add(p1);
             }
             if (form == 5) // зю
             {
                 CubeMaker(width);
-                ls[1].x += 2;
+                ls[2].x -= 2;
             }
             if (form == 6) // зеркальная зю
             {
@@ -192,19 +193,17 @@ namespace My_tetris
 
             Point zero; // опорная точка
 
-            if (form == 2) zero = ls[2]; // для палки - центр
+            if (form == 5 || form == 6) zero = ls[1];
 
-            else if (form == 3 || form == 4) zero = ls[1];
-
-            else zero = ls[0];
+            else zero = ls[2];
 
             Delete();
             for (int i = 0; i < ls.Count; i++)
             {
                 int offsetX = ls[i].x - zero.x;
                 int offsetY = ls[i].y - zero.y;
-                ls[i].x = (int)(offsetX * Math.Cos(angle) - offsetY * Math.Sin(angle)) + zero.x;
-                ls[i].y = (int)(offsetX * Math.Sin(angle) + offsetY * Math.Cos(angle)) + zero.y;
+                ls[i].x = (int)(offsetX * Math.Cos(angle) - offsetY * Math.Sin(angle) + zero.x);
+                ls[i].y = (int)(offsetX * Math.Sin(angle) + offsetY * Math.Cos(angle) + zero.y);
                 ls[i].symb = '*';
                 ls[i].Draw();
             }
