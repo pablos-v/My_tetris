@@ -19,7 +19,7 @@ namespace My_tetris
             wide = width;
             high = height;
             HorizLine lineUp = new (0, width, 0, '-');
-            HorizLine lineDown = new (0, width, height, '-');
+            HorizLine lineDown = new (0, width, height, '|');
             VertLine lineLeft = new (0, 0, height, '|');
             VertLine lineRight = new (width, 0, height, '|');
             lineDownPoints = lineDown.ls;

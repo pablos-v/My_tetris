@@ -90,17 +90,20 @@ namespace My_tetris
             return false;
         }
 
-        internal bool Fallen(List<Point> playGround, List<Point> lineDownPoints)
+        internal bool Fallen(List<List<Point>> playGround, List<Point> lineDownPoints)
         {
             foreach (Point p in ls)
             {
-                foreach (Point groundPoint in playGround)
+                foreach (List<Point> line in playGround)
                 {
-                    if (p.x==groundPoint.x && p.y+1 == groundPoint.y) return true;
+                    foreach (Point groundPoint in line)
+                    {
+                        if (p.x==groundPoint.x && p.y+1 == groundPoint.y) return true;
+                    }
                 }
                 foreach (Point groundPoint in lineDownPoints)
                 {
-                    if (p.y == groundPoint.y) return true;
+                    if (p.y+1 == groundPoint.y) return true;
                 }
             }
             return false;

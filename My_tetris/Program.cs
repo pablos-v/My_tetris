@@ -1,25 +1,43 @@
-﻿My_tetris.Frame frame = new (20, 28);
+﻿My_tetris.Frame frame = new (21, 28);
 frame.Draw();
 
 int dice = new Random().Next(1, 8);
 My_tetris.Block block = new (dice, frame.wide);
 block.Draw();
 
-List<My_tetris.Point> playGround = new();
+// список линий игрового поля
+List<List<My_tetris.Point>> playGround = new();
+
+for (int i = 0; i <= frame.high; i++)
+{
+    playGround.Add(new List<My_tetris.Point>());
+}
 
 while (true)
 {
     if (block.Fallen(playGround, frame.lineDownPoints))
     {
-        // Добавить точки блока в массу на игровом поле
-        playGround.AddRange(block.ls);
+        // Добавить точки блока на игровое поле
+        foreach (My_tetris.Point p in block.ls)
+        {
+            playGround[p.y].Add(p);
+        }
 
-        // линия - список точек
-        // список линий
-        //    if (точек в линии == ширине frame.wide) удалить линию, сместить оставшиеся
+        // Убрать заполненные линии
+        for (int i = 0; i <= frame.high; i++)
+        {
+            if (playGround[i].Count == frame.wide-1)
+            {
+                DeleteLine(i, playGround);
+            }
+        }
 
         // Отрисовываем ещё раз всю массу на поле
-        foreach (My_tetris.Point p in playGround) p.Draw();
+        foreach (List<My_tetris.Point> line in playGround)
+        {
+            foreach (My_tetris.Point p in line) p.Draw();
+
+        }
 
         // Геймовер
         if (block.BreakingUpLine(frame.upLinePoints)) break;
@@ -42,6 +60,33 @@ while (true)
 
     // Скорость падения блоков
     Thread.Sleep(250);
+}
+
+void DeleteLine(int line, List<List<My_tetris.Point>> playGround)
+{
+    // убрать все точки линии с поля
+    foreach (My_tetris.Point p in playGround[line])
+    {
+        p.Clear();
+    }
+    playGround[line].Clear();
+
+    // все точки что выше = у++ и перенести на линию ниже
+    for (int i = line; i >= 1; i--)
+    {
+        //playGround[i] = playGround[i - 1];
+        //playGround[i - 1].Clear();
+        playGround[i].Clear();
+        playGround[i].AddRange(playGround[i-1]);
+
+        foreach (My_tetris.Point p in playGround[i])
+        {
+            p.Clear();
+            p.y++;
+            p.symb = '*';
+            p.Draw();
+        }
+    }
 }
 
 Console.SetCursorPosition(30, 12);
