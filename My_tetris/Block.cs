@@ -8,26 +8,22 @@ namespace My_tetris
 {
     internal class Block : Figure
     {
-        public Direction direction;
+        public int f;
+        //public Direction direction;
         public Block(int form, int width)
         {
+            f = form;
             ls = new();
+            int centre = width / 2;
             if (form == 1) // Куб
             {
-                for (int i = 0; i < 2; i++)
-                {
-                    for (int j = 1; j < 3; j++)
-                    {
-                        Point p = new (width / 2 + i, j, '*');
-                        ls.Add(p);
-                    }
-                }
+                CubeMaker(width);
             }
             if (form == 2) // палка
             {
                 for (int j = 0; j < 5; j++)
                 {
-                    Point p = new (width / 2 - 2 + j, 1, '*');
+                    Point p = new (centre - 2 + j, 1, '*');
                     ls.Add(p);
                 }
             }
@@ -35,90 +31,175 @@ namespace My_tetris
             {
                 for (int j = 1; j < 5; j++)
                 {
-                    Point p = new(width / 2, j, '*');
+                    Point p = new(centre, j, '*');
                     ls.Add(p);
                 }
-                Point p1 = new(width / 2 + 1, 4, '*');
+                Point p1 = new(centre + 1, 4, '*');
                 ls.Add(p1);
             }
             if (form == 4) // зеркальная L
             {
                 for (int j = 1; j < 5; j++)
                 {
-                    Point p = new(width / 2, j, '*');
+                    Point p = new(centre, j, '*');
                     ls.Add(p);
                 }
-                Point p1 = new(width / 2 - 1, 4, '*');
+                Point p1 = new(centre - 1, 4, '*');
                 ls.Add(p1);
             }
             if (form == 5) // зю
             {
-                int x = 0;
-                for (int i = 1; i < 3; i++)
-                {
-                    for (int j = 0; j < 2; j++)
-                    {
-                        Point p = new(width / 2 + j + x, i, '*');
-                        ls.Add(p);
-                    }
-                    x++;
-                }
+                CubeMaker(width);
+                ls[2].x -= 2;
             }
             if (form == 6) // зеркальная зю
             {
-                int x = 0;
-                for (int i = 1; i < 3; i++)
+                CubeMaker(width);
+                ls[3].x -= 2;
+            }
+            if (form == 7) // T
+            {
+                CubeMaker(width);
+                ls[1].x += 2;
+                ls[1].y -= 1;
+            }
+        }
+
+        private void CubeMaker(int width)
+        {
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 1; j < 3; j++)
                 {
-                    for (int j = 0; j < 2; j++)
-                    {
-                        Point p = new(width / 2 + j - x, i, '*');
-                        ls.Add(p);
-                    }
-                    x++;
+                    Point p = new(width / 2 + i, j, '*');
+                    ls.Add(p);
                 }
             }
         }
 
-        internal bool IsHit(List<Point> playGround, List<Point> lineDownPoints)
+        internal bool BreakingUpLine(List<Point> UpLinePoints)
         {
             foreach (Point p in ls)
             {
-                foreach (Point groundPoint in playGround)
+                foreach (Point l in UpLinePoints)
                 {
-                    if (p.x==groundPoint.x && p.y+1 == groundPoint.y) return true;
-                }
-                foreach (Point groundPoint in lineDownPoints)
-                {
-                    if (p.x == groundPoint.x && p.y == groundPoint.y) return true;
+
+                  if (p.y == l.y+2) return true;
                 }
             }
             return false;
         }
 
-        internal void Move()
+        internal bool Fallen(List<List<Point>> playGround, List<Point> lineDownPoints)
         {
-            for (int i = 0; i < ls.Count; i++) // стереть блок
+            foreach (Point p in ls)
             {
-                ls[i].symb = ' ';
-                ls[i].Draw();
+                foreach (List<Point> line in playGround)
+                {
+                    foreach (Point groundPoint in line)
+                    {
+                        if (p.x==groundPoint.x && p.y+1 == groundPoint.y) return true;
+                    }
+                }
+                foreach (Point groundPoint in lineDownPoints)
+                {
+                    if (p.y+1 == groundPoint.y) return true;
+                }
+            }
+            return false;
+        }
+
+        internal void Move(string direction, int w)
+        {
+             if (direction == "down")
+            {
+                Delete();
+                for (int i = 0; i < ls.Count; i++) // отрисовать блок ниже
+                {
+                    ls[i].y++;
+                    ls[i].symb = '*';
+                    ls[i].Draw();
+                }
             }
 
-            for (int i = 0; i < ls.Count; i++) // отрисовать блок ниже
+            if (direction == "left")
             {
-                ls[i].y++;
+                foreach (Point p in ls) // проверить на границу
+                {
+                    if (p.x == w - 1 || p.x == 1) return;
+                }
+                Delete();
+                for (int i = 0; i < ls.Count; i++) // отрисовать блок левее
+                {
+                    ls[i].x--;
+                    ls[i].symb = '*';
+                    ls[i].Draw();
+                }
+            }
+
+            if (direction == "right")
+            {
+                foreach (Point p in ls) // проверить на границу
+                {
+                    if (p.x == w - 1 || p.x == 1) return;
+                }
+                Delete();
+                for (int i = 0; i < ls.Count; i++) // отрисовать блок правее
+                {
+                    ls[i].x++;
+                    ls[i].symb = '*';
+                    ls[i].Draw();
+                }
+            }
+        }
+        // решил прокинуть границу правой стороны рамки для проверки границы в методе Move(),
+        // получилось корявоо, это костыль. Но я пока не знаю как лучше.
+        // с кодом проверки тоже косяк - он написан дважды, тоже не знаю как улучшить.
+        public void DirectionListener(ConsoleKey key, int w, int form) 
+        {
+            if (key == ConsoleKey.LeftArrow)
+            {
+                Move("left", w);
+            }
+            else if (key == ConsoleKey.RightArrow)
+            {
+                Move("right", w);
+            }
+            else if (key == ConsoleKey.UpArrow)
+            {
+                Rotate("clockwize", form);
+            }
+            else if (key == ConsoleKey.DownArrow)
+            {
+                Rotate("backward", form);
+            }
+        }
+
+        private void Rotate(string side, int form)
+        {
+            // куб не крутится
+            if (form == 1) return;
+
+            int degrees = side == "clockwize" ? 90 : 270;
+            double angle = Math.PI * degrees / 180.0;
+
+            // опорная точка
+            Point zero;
+
+            if (form == 5 || form == 6) zero = ls[1];
+
+            else zero = ls[2];
+
+            Delete();
+            for (int i = 0; i < ls.Count; i++)
+            {
+                int offsetX = ls[i].x - zero.x;
+                int offsetY = ls[i].y - zero.y;
+                ls[i].x = (int)(offsetX * Math.Cos(angle) - offsetY * Math.Sin(angle) + zero.x);
+                ls[i].y = (int)(offsetX * Math.Sin(angle) + offsetY * Math.Cos(angle) + zero.y);
                 ls[i].symb = '*';
                 ls[i].Draw();
             }
-
         }
-
-        //public void DirectionListener(ConsoleKey key)
-        //{
-        //    if (key == ConsoleKey.LeftArrow) direction = Direction.LEFT;
-        //    else if (key == ConsoleKey.RightArrow) direction = Direction.RIGHT;
-        //    else if (key == ConsoleKey.UpArrow) direction = Direction.UP;
-        //    else if (key == ConsoleKey.DownArrow) direction = Direction.DOWN;
-        //}
-
     }
 }

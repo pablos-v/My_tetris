@@ -1,47 +1,95 @@
-﻿Console.SetBufferSize(120, 30);
-
-My_tetris.Frame frame = new (20, 28);
+﻿My_tetris.Frame frame = new (21, 28);
 frame.Draw();
 
-Random rnd = new();
-int dice = rnd.Next(1, 5);
-
-My_tetris.Block block = new (dice, frame.w);
+int dice = new Random().Next(1, 8);
+My_tetris.Block block = new (dice, frame.wide);
 block.Draw();
 
-List<My_tetris.Point> playGround = new();
+// список линий игрового поля
+List<List<My_tetris.Point>> playGround = new();
+
+for (int i = 0; i <= frame.high; i++)
+{
+    playGround.Add(new List<My_tetris.Point>());
+}
 
 while (true)
 {
-    if (block.IsHit(playGround, frame.lineDownPoints))
+    if (block.Fallen(playGround, frame.lineDownPoints))
     {
-        playGround.AddRange(block.ls);
-        dice = rnd.Next(1, 5);
-        My_tetris.Block block1 = new(dice, frame.w);
+        // Добавить точки блока на игровое поле
+        foreach (My_tetris.Point p in block.ls)
+        {
+            playGround[p.y].Add(p);
+        }
+
+        // Убрать заполненные линии
+        for (int i = 0; i <= frame.high; i++)
+        {
+            if (playGround[i].Count == frame.wide-1)
+            {
+                DeleteLine(i, playGround);
+            }
+        }
+
+        // Отрисовываем ещё раз всю массу на поле
+        foreach (List<My_tetris.Point> line in playGround)
+        {
+            foreach (My_tetris.Point p in line) p.Draw();
+
+        }
+
+        // Геймовер
+        if (block.BreakingUpLine(frame.upLinePoints)) break;
+
+        // Новый блок
+        dice = new Random().Next(1, 8);
+        My_tetris.Block block1 = new(dice, frame.wide);
         block = block1;
         block.Draw();
     }
-    block.Move();
-    Thread.Sleep(100);
+
+    // Перемещения стрелочками
+    if (Console.KeyAvailable)
+    {
+        ConsoleKeyInfo key = Console.ReadKey();
+        block.DirectionListener(key.Key, frame.wide, block.f);
+    }
+
+    block.Move("down", frame.wide);
+
+    // Скорость падения блоков
+    Thread.Sleep(250);
 }
 
+void DeleteLine(int line, List<List<My_tetris.Point>> playGround)
+{
+    // убрать все точки линии с поля
+    foreach (My_tetris.Point p in playGround[line])
+    {
+        p.Clear();
+    }
+    playGround[line].Clear();
 
-//while (true)
-//{
-//    if (block.IsHit()) добавить все точки в список, создать блок, нарисовать блок
-//    if (точек в линии == ширине frame.width) удалить линию
-//    if (GameOver()) break;
-//    block.Move();
+    // все точки что выше = у++ и перенести на линию ниже
+    for (int i = line; i >= 1; i--)
+    {
+        //playGround[i] = playGround[i - 1];
+        //playGround[i - 1].Clear();
+        playGround[i].Clear();
+        playGround[i].AddRange(playGround[i-1]);
 
-//    Thread.Sleep(250);
+        foreach (My_tetris.Point p in playGround[i])
+        {
+            p.Clear();
+            p.y++;
+            p.symb = '*';
+            p.Draw();
+        }
+    }
+}
 
-//    if (Console.KeyAvailable)
-//    {
-//        ConsoleKeyInfo key = Console.ReadKey();
-//        block.DirectionListener(key.Key); в классе блок метод Rotate() или Strafe() смотря от кнопки
-//    }
-
-
-
-
+Console.SetCursorPosition(30, 12);
+Console.ForegroundColor = ConsoleColor.DarkGreen;
+Console.WriteLine("GAME OVER !!!");
 Console.ReadLine();
