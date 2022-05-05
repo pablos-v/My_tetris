@@ -8,7 +8,7 @@ namespace My_tetris
 {
     internal class Frame
     {
-        List<Figure> wallList;
+        readonly List<Figure> wallList;
         public int wide;
         public int high;
         public List<Point> lineDownPoints;

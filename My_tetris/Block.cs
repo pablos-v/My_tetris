@@ -8,18 +8,18 @@ namespace My_tetris
 {
     internal class Block : Figure
     {
-        public int f;
+        public int form;
         //public Direction direction;
-        public Block(int form, int width)
+        public Block(int type, int width)
         {
-            f = form;
+            form = type;
             ls = new();
             int centre = width / 2;
-            if (form == 1) // Куб
+            if (type == 1) // Куб
             {
                 CubeMaker(width);
             }
-            if (form == 2) // палка
+            if (type == 2) // палка
             {
                 for (int j = 0; j < 5; j++)
                 {
@@ -27,7 +27,7 @@ namespace My_tetris
                     ls.Add(p);
                 }
             }
-            if (form == 3) // L
+            if (type == 3) // L
             {
                 for (int j = 1; j < 5; j++)
                 {
@@ -37,7 +37,7 @@ namespace My_tetris
                 Point p1 = new(centre + 1, 4, '*');
                 ls.Add(p1);
             }
-            if (form == 4) // зеркальная L
+            if (type == 4) // зеркальная L
             {
                 for (int j = 1; j < 5; j++)
                 {
@@ -47,17 +47,17 @@ namespace My_tetris
                 Point p1 = new(centre - 1, 4, '*');
                 ls.Add(p1);
             }
-            if (form == 5) // зю
+            if (type == 5) // зю
             {
                 CubeMaker(width);
                 ls[2].x -= 2;
             }
-            if (form == 6) // зеркальная зю
+            if (type == 6) // зеркальная зю
             {
                 CubeMaker(width);
                 ls[3].x -= 2;
             }
-            if (form == 7) // T
+            if (type == 7) // T
             {
                 CubeMaker(width);
                 ls[1].x += 2;
@@ -83,7 +83,6 @@ namespace My_tetris
             {
                 foreach (Point l in UpLinePoints)
                 {
-
                   if (p.y == l.y+2) return true;
                 }
             }
@@ -155,7 +154,7 @@ namespace My_tetris
         // решил прокинуть границу правой стороны рамки для проверки границы в методе Move(),
         // получилось корявоо, это костыль. Но я пока не знаю как лучше.
         // с кодом проверки тоже косяк - он написан дважды, тоже не знаю как улучшить.
-        public void DirectionListener(ConsoleKey key, int w, int form) 
+        public void DirectionListener(ConsoleKey key, int w, int type) 
         {
             if (key == ConsoleKey.LeftArrow)
             {
@@ -167,18 +166,18 @@ namespace My_tetris
             }
             else if (key == ConsoleKey.UpArrow)
             {
-                Rotate("clockwize", form);
+                Rotate("clockwize", type);
             }
             else if (key == ConsoleKey.DownArrow)
             {
-                Rotate("backward", form);
+                Rotate("backward", type);
             }
         }
 
-        private void Rotate(string side, int form)
+        private void Rotate(string side, int type)
         {
             // куб не крутится
-            if (form == 1) return;
+            if (type == 1) return;
 
             int degrees = side == "clockwize" ? 90 : 270;
             double angle = Math.PI * degrees / 180.0;
@@ -186,7 +185,7 @@ namespace My_tetris
             // опорная точка
             Point zero;
 
-            if (form == 5 || form == 6) zero = ls[1];
+            if (type == 5 || type == 6) zero = ls[1];
 
             else zero = ls[2];
 
